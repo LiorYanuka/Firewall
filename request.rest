@@ -1,0 +1,33 @@
+POST http://localhost:3000/api/firewall/ip/add
+Content-Type: application/json
+
+{
+    "values": ["1.1.1.1", "2.2.2.2"], "mode": "blacklist"
+}
+
+###
+
+DELETE http://localhost:3000/api/firewall/ip/remove
+Content-Type: application/json
+
+{
+    "values": ["1.1.1.1", "2.2.2.2"], "mode": "blacklist"
+}
+
+###
+
+POST http://localhost:3000/api/firewall/url/add
+Content-Type: application/json
+
+{
+    "values": ["example.com", "malware.net"], "mode": "blacklist"
+}
+
+###
+
+DELETE http://localhost:3000/api/firewall/url/remove
+Content-Type: application/json
+
+{
+    "values": ["example.com", "malware.net"], "mode": "blacklist"
+}
