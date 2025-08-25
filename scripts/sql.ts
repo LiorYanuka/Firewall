@@ -10,7 +10,7 @@ async function ensureRulesTables(): Promise<void> {
           ip INET NOT NULL,
           mode TEXT NOT NULL CHECK (mode IN ('whitelist','blacklist')),
           status TEXT NOT NULL DEFAULT 'success',
-          created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+          active BOOLEAN NOT NULL DEFAULT TRUE,
           UNIQUE (ip, mode)
         );
     `);
@@ -21,7 +21,7 @@ async function ensureRulesTables(): Promise<void> {
           url TEXT NOT NULL,
           mode TEXT NOT NULL CHECK (mode IN ('whitelist','blacklist')),
           status TEXT NOT NULL DEFAULT 'success',
-          created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+          active BOOLEAN NOT NULL DEFAULT TRUE,
           UNIQUE (url, mode)
         );
     `);
@@ -32,7 +32,7 @@ async function ensureRulesTables(): Promise<void> {
           port NUMERIC NOT NULL,
           mode TEXT NOT NULL CHECK (mode IN ('whitelist','blacklist')),
           status TEXT NOT NULL DEFAULT 'success',
-          created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+          active BOOLEAN NOT NULL DEFAULT TRUE,
           UNIQUE (port, mode)
         );
     `);
