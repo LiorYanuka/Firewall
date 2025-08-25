@@ -5,6 +5,7 @@ import urlRoutes from "./routes/url.route"
 
 
 const app = express();
+app.use(express.json());
 
 app.use('/api/firewall/ip', ipRoutes);
 app.use('/api/firewall/url', urlRoutes);
