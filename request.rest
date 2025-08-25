@@ -49,3 +49,22 @@ Content-Type: application/json
 {
     "values": [22, 443], "mode": "blacklist"
 }
+
+######
+
+GET http://localhost:3000/api/firewall/rules/retrieve
+Content-Type: application/json
+
+{
+}
+
+###
+
+PATCH http://localhost:3000/api/firewall/rules/toggle
+Content-Type: application/json
+
+{
+    "ips": { "values": ["1.1.1.1", "2.2.2.2"], "mode": "blacklist", "active": false },
+    "urls": { "values": ["example.com", "malware.net"], "mode": "blacklist", "active": true },
+    "ports": { "values": [22, 443], "mode": "blacklist", "active": false }
+}
