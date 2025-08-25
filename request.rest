@@ -14,6 +14,20 @@ Content-Type: application/json
     "values": ["1.1.1.1", "2.2.2.2"], "mode": "blacklist"
 }
 
+###
 
-// request - {'values': ['1.1.1.1', '2.2.2.2'], 'mode': 'blacklist'}
-// response - {'type': 'ip', 'mode': 'blacklist', 'values': ['1.1.1.1', '2.2.2.2'], 'status': 'success'}
+POST http://localhost:3000/api/firewall/url/add
+Content-Type: application/json
+
+{
+    "values": ["example.com", "malware.net"], "mode": "blacklist"
+}
+
+###
+
+DELETE http://localhost:3000/api/firewall/url/remove
+Content-Type: application/json
+
+{
+    "values": ["example.com", "malware.net"], "mode": "blacklist"
+}

@@ -2,7 +2,6 @@ import express, { Request, Response } from "express"
 import { query } from "../db";
 
 
-// 1. Create new ip in whitelist
 export const addIP = async (req: Request, res: Response) => {
     try {
         const { values, mode } = req.body ?? {};
@@ -18,10 +17,10 @@ export const addIP = async (req: Request, res: Response) => {
             for (const ip of cleaned) {
                 await query("INSERT INTO ip_rules (ip, mode) VALUES ($1::inet, $2) ON CONFLICT (ip, mode) DO NOTHING",[ip, mode]
             );}
-            console.log("Inserted");
+            console.log("IP Inserted");
         } 
         catch (e) {
-            console.error("Insert failed:", e);
+            console.error("IP Insert failed:", e);
         }
     
         return res.status(201).json({ type: "ip", mode, values: cleaned, status: "success" });
@@ -31,7 +30,6 @@ export const addIP = async (req: Request, res: Response) => {
     }
 };
 
-// 1. Remove ip from whitelist
 export const removeIP = async(req: Request, res: Response) => {
     try {
         const { values, mode } = req.body ?? {};
@@ -47,10 +45,10 @@ export const removeIP = async(req: Request, res: Response) => {
             for (const ip of cleaned) {
                 await query("DELETE FROM ip_rules WHERE ip = $1::inet AND mode = $2",[ip, mode]
             );}
-            console.log("Deleted");
+            console.log("IP Deleted");
         } 
         catch (e) {
-            console.error("Delete failed:", e);
+            console.error("IP Delete failed:", e);
         }
     
         return res.status(201).json({ type: "ip", mode, values: cleaned, status: "success" });

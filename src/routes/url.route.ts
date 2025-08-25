@@ -1,9 +1,16 @@
 import express, { Request, Response } from "express"
+import { addURL, removeURL } from "../controller/url.controller"
 
 const router = express.Router();
 
-router.get('/', (req: Request, res: Response) => {
-    res.send("Hello, this is the URL route")
-});
+// 1. Validate input
+// 2. Fetch existing ip in whitelist
+// 3. Check if ip exists in whitelist
+router.post('/add', addURL);
+
+// 1. Validate input
+// 2. Fetch existing ip in whitelist
+// 3. Check if ip exists in whitelist
+router.delete('/remove', removeURL);
 
 export default router;
