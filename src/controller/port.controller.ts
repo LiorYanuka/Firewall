@@ -1,15 +1,13 @@
 import express, { Request, Response } from "express"
-import { query } from "../db";
-import { validateRules } from "../services/validationService"
-import { insertRules } from "../services/sqlCommandsService"
+import { processRules } from "../services/sqlCommandsService"
 
 
 export const addPort = async (req: Request, res: Response) => {
     const { values, mode } = req.body ?? {};
 
     try {
-        await insertRules(values, "port", mode);
-        res.status(200).json({ message: "Port rules added successfully" });
+        await processRules(values, "port", mode, "insert");
+        res.status(200).json({ message: "Port rules inserted successfully" });
     } 
     catch (e) {
         console.error("Failed to insert port rules:", e);
@@ -17,26 +15,16 @@ export const addPort = async (req: Request, res: Response) => {
     }
 };
 
-
 export const removePort = async(req: Request, res: Response) => {
-    try {
-        const { values, mode } = req.body ?? {};
-        const cleaned = validateRules(req.body, "port");
+    const { values, mode } = req.body ?? {};
 
-        try {
-            for (const port of cleaned) {
-                await query("DELETE FROM port_rules WHERE port = $1 AND mode = $2",[port, mode]
-            );}
-            console.log("Port Deleted");
-        } 
-        catch (e) {
-            console.error("Port Delete failed:", e);
-        }
-    
-        return res.status(201).json({ type: "port", mode, values: cleaned, status: "success" });
+    try {
+        await processRules(values, "port", mode, "delete");
+        res.status(200).json({ message: "Port rules deleted successfully" });
     } 
-    catch {
-        return res.status(500).json({ error: "Internal server error" });
+    catch (e) {
+        console.error("Failed to delete port rules:", e);
+        res.status(500).json({ error: "Failed to delete port rules" });
     }
 };
 
