@@ -1,6 +1,6 @@
-import app from "./server"
+import app from "./server";
+import { config } from "./config/env";
 
-app.listen(3000, () => {
-    console.log("Server is running on localhost:3000");
-})
-
+app.listen(config.port, () => {
+    console.log(`Server is running on localhost:${config.port} in ${config.env} mode`);
+});

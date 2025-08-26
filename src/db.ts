@@ -1,18 +1,10 @@
 import { Pool } from "pg";
-import dotenv from "dotenv"
-import { env } from "./config/env";
-
-
-dotenv.config();
+import { config } from "./config/env";
 
 const pool = new Pool({
-    user: env.user,
-    host: env.host,
-    database: env.database,
-    password: env.password,
-    port: env.port,
+    connectionString: config.databaseUri,
 });
 
 export const query = (text: string, params?: any[]) => {
-  return pool.query(text, params);
+    return pool.query(text, params);
 };

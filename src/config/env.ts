@@ -1,24 +1,26 @@
 import * as zod from "zod";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const EnvSchema = zod.object({
-    PGUSER: zod.string().min(1, "PGUSER is required"),
-    PGHOST: zod.string().min(1, "PGHOST is required"),
-    PGDATABASE: zod.string().min(1, "PGDATABASE is required"),
-    PGPASSWORD: zod.string().min(1, "PGPASSWORD is required"),
-    PGPORT: zod.string().transform((val) => parseInt(val, 10)).refine((val) => !isNaN(val), "PGPORT must be a number"),
+    ENV: zod.enum(["dev", "production"]),
+    PORT: zod.string().transform((val) => parseInt(val, 10)).refine((val) => val > 0 && val < 65536, "PORT must be a valid port number"),
+    DATABASE_URI_DEV: zod.string().url(),
+    DATABASE_URI_PROD: zod.string().url(),
 });
 
 const parsed = EnvSchema.safeParse(process.env);
 
 if (!parsed.success) {
-  console.error("Invalid environment variables:", parsed.error);
-  throw new Error("Invalid environment configuration");
+    console.error("Invalid environment variables:", parsed.error.format());
+    throw new Error("Invalid environment configuration");
 }
 
-export const env = {
-    user: parsed.data.PGUSER,
-    host: parsed.data.PGHOST,
-    database: parsed.data.PGDATABASE,
-    password: parsed.data.PGPASSWORD,
-    port: parsed.data.PGPORT,
+const { ENV, PORT, DATABASE_URI_DEV, DATABASE_URI_PROD } = parsed.data;
+
+export const config = {
+    env: ENV,
+    port: PORT,
+    databaseUri: ENV === "dev" ? DATABASE_URI_DEV : DATABASE_URI_PROD,
 };
