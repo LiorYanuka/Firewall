@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express"
-import ipRoutes from "./routes/seperate/ip.route"
-import urlRoutes from "./routes/seperate/url.route"
-import portRoutes from "./routes/seperate/port.route"
+// import ipRoutes from "./routes/seperate/ip.route"
+// import urlRoutes from "./routes/seperate/url.route"
+// import portRoutes from "./routes/seperate/port.route"
 import rulesRoutes from "./routes/rules.route"
 import universalRoutes from "./routes/universal.route"
 

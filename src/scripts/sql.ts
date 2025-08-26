@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-import { query } from "../src/db";
+import { query } from "../db";
 
 dotenv.config();
 
