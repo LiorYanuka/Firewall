@@ -1,5 +1,5 @@
 import { query } from "../db";
-import { validateRules } from "./validationService";
+import { validateRules } from "../middleware/validationMiddleware";
 import { RuleType, ActionType, ModeType } from "../types/rules";
 
 
