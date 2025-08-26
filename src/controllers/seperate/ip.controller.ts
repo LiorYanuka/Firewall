@@ -1,3 +1,5 @@
+// This code is here in case of refactoring
+
 import express, { Request, Response } from "express"
 import { processRules } from "../../services/sqlCommandsService"
 
@@ -27,4 +29,3 @@ export const removeIP = async(req: Request, res: Response) => {
         res.status(500).json({ error: "Failed to delete IP rules" });
     }
 };
-

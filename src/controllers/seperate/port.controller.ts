@@ -1,3 +1,5 @@
+// This code is here in case of refactoring
+
 import express, { Request, Response } from "express"
 import { processRules } from "../../services/sqlCommandsService"
 
