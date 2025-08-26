@@ -1,4 +1,9 @@
-export const validateRules = (data: any, type: "port" | "url" | "ip"): (number | string)[] => {
+import { RuleType, ModeType } from "../types/rules";
+
+
+export const validateRules = (
+    data: any, 
+    rule: RuleType): (number | string)[] => {
     const { values, mode } = data ?? {};
 
     if (!Array.isArray(values) || !values.length) {
@@ -11,7 +16,7 @@ export const validateRules = (data: any, type: "port" | "url" | "ip"): (number |
 
     let cleaned: (string | number)[] = [];
 
-    switch (type) {
+    switch (rule) {
         case "port":
             cleaned = values.filter(v => typeof v === "number");
             break;

@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express"
-import { getRules, updateRules } from "../controller/rules.controller"
+import { getRules, updateRules } from "../controllers/rules.controller"
 
 const router = express.Router();
 

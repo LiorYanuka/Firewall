@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express"
-import { processRules } from "../services/sqlCommandsService"
+import { processRules } from "../../services/sqlCommandsService"
 
 
 export const addPort = async (req: Request, res: Response) => {

@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express"
-import { addPort, removePort } from "../controller/port.controller"
+import { addPort, removePort } from "../../controllers/seperate/port.controller"
 
 const router = express.Router();
 

@@ -1,20 +1,19 @@
 import { query } from "../db";
 import { validateRules } from "./validationService";
+import { RuleType, ActionType, ModeType } from "../types/rules";
 
-type RuleType = "port" | "url" | "ip";
-type ActionType = "insert" | "delete";
 
 export const processRules = async (
   data: any,
-  type: RuleType,
-  mode: "whitelist" | "blacklist",
+  rule: RuleType,
+  mode: ModeType,
   action: ActionType) => {
-  const cleaned = validateRules({ values: data, mode }, type);
+  const cleaned = validateRules({ values: data, mode }, rule);
 
   let table = "";
   let column = "";
 
-  switch (type) {
+  switch (rule) {
     case "port":
       table = "port_rules";
       column = "port";
@@ -34,13 +33,13 @@ export const processRules = async (
 
     if (action === "insert") {
       sql =
-        type === "ip"
+        rule === "ip"
           ? `INSERT INTO ${table} (${column}, mode) VALUES ($1::inet, $2) ON CONFLICT (${column}, mode) DO NOTHING`
           : `INSERT INTO ${table} (${column}, mode) VALUES ($1, $2) ON CONFLICT (${column}, mode) DO NOTHING`;
     } 
     else {
       sql =
-        type === "ip"
+        rule === "ip"
           ? `DELETE FROM ${table} WHERE ${column} = $1::inet AND mode = $2`
           : `DELETE FROM ${table} WHERE ${column} = $1 AND mode = $2`;
     }
@@ -48,5 +47,5 @@ export const processRules = async (
     await query(sql, [item, mode]);
   }
 
-  console.log(`${type.toUpperCase()} ${action.toUpperCase()} completed for ${cleaned.length} item(s).`);
+  console.log(`${rule.toUpperCase()} ${action.toUpperCase()} completed for ${cleaned.length} item(s).`);
 };

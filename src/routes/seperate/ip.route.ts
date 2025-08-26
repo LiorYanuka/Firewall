@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express"
-import { addIP, removeIP } from "../controller/ip.controller"
+import { addIP, removeIP } from "../../controllers/seperate/ip.controller"
 
 const router = express.Router();
 
