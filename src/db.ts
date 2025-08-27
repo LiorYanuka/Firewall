@@ -1,5 +1,6 @@
 import { Pool } from "pg";
 import { config } from "./config/env";
+import { drizzle } from "drizzle-orm/node-postgres";
 
 
 const pool = new Pool({
@@ -26,3 +27,5 @@ connectWithRetry();
 export const query = (text: string, params?: any[]) => {
     return pool.query(text, params);
 };
+
+export const db = drizzle(pool);

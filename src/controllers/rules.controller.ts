@@ -1,108 +1,60 @@
 import express, { Request, Response } from "express"
-import { query } from "../db";
-
+import { db } from "../db";
+import { ipRules, urlRules, portRules } from "../schema";
+import { and, eq, inArray } from "drizzle-orm";
 
 export const getRules = async (req: Request, res: Response) => {
     try {
-        try {
-            // IP rules
-            const ipB = await query("SELECT id, ip FROM ip_rules WHERE mode = 'blacklist'");
-            const ipW = await query("SELECT id, ip FROM ip_rules WHERE mode = 'whitelist'");
-            console.log("Got IPs");
+        const [ipB, ipW, urlB, urlW, portB, portW] = await Promise.all([
+            db.select({ id: ipRules.id, ip: ipRules.ip }).from(ipRules).where(eq(ipRules.mode, "blacklist")),
+            db.select({ id: ipRules.id, ip: ipRules.ip }).from(ipRules).where(eq(ipRules.mode, "whitelist")),
+            db.select({ id: urlRules.id, url: urlRules.url }).from(urlRules).where(eq(urlRules.mode, "blacklist")),
+            db.select({ id: urlRules.id, url: urlRules.url }).from(urlRules).where(eq(urlRules.mode, "whitelist")),
+            db.select({ id: portRules.id, port: portRules.port }).from(portRules).where(eq(portRules.mode, "blacklist")),
+            db.select({ id: portRules.id, port: portRules.port }).from(portRules).where(eq(portRules.mode, "whitelist")),
+        ]);
 
-            // URL rules
-            const urlB = await query("SELECT id, url FROM url_rules WHERE mode = 'blacklist'");
-            const urlW = await query("SELECT id, url FROM url_rules WHERE mode = 'whitelist'");
-            console.log("Got URLs");
-
-            // Port rules
-            const portB = await query("SELECT id, port FROM port_rules WHERE mode = 'blacklist'");
-            const portW = await query("SELECT id, port FROM port_rules WHERE mode = 'whitelist'");
-            console.log("Got Ports");
-            
-            // JSON
-            return res.status(200).json({
-                ips: {
-                    blacklist: ipB.rows,
-                    whitelist: ipW.rows
-                },
-                urls: {
-                    blacklist: urlB.rows,
-                    whitelist: urlW.rows
-                },
-                ports: {
-                    blacklist: portB.rows,
-                    whitelist: portW.rows
-                }
-            });
-        } 
-        catch (e) {
-            console.error("Failed retrieving rules:", e);
-            return res.status(500).json({ error: "Failed retrieving rules" });
-        }
+        return res.status(200).json({ ip: { blacklist: ipB, whitelist: ipW }, url: { blacklist: urlB, whitelist: urlW }, port: { blacklist: portB, whitelist: portW } });
     } 
-    catch {
-        return res.status(500).json({ error: "Internal server error" });
+    catch (e) {
+        console.error("Retrieve rules failed:", e);
+        return res.status(500).json({ error: "Failed to retrieve rules" });
     }
 };
-
 
 export const updateRules = async(req: Request, res: Response) => {
     const { ips, urls, ports } = req.body ?? {};
 
     try {
-        const updatedIPs = [];
-
+        const updatedIPs: { id: number; ip: string; active: boolean }[] = [];
         if (ips?.values?.length) {
-            for (const ip of ips.values) {
-                const result = await query(
-                    "UPDATE ip_rules SET active = $1 WHERE ip = $2::inet RETURNING id, ip, active",
-                    [ips.active, ip]
-                );
-    
-                if (result.rows.length) {
-                    updatedIPs.push(result.rows[0]);
-                }
+            for (const ip of ips.values as string[]) {
+                const rows = await db.update(ipRules).set({ active: Boolean(ips.active) }).where(eq(ipRules.ip, ip)).returning({ id: ipRules.id, ip: ipRules.ip, active: ipRules.active });
+                if (rows.length) updatedIPs.push(rows[0]);
             }
-            console.log("IP Updated");
         }
 
-        const updatedURLs = [];
-
+        const updatedURLs: { id: number; url: string; active: boolean }[] = [];
         if (urls?.values?.length) {
-            for (const url of urls.values) {
-                const result = await query(
-                    "UPDATE url_rules SET active = $1 WHERE url = $2 RETURNING id, url, active",
-                    [urls.active, url]
-                );
-
-                if (result.rows.length) {
-                    updatedURLs.push(result.rows[0]);
-                }
+            for (const url of urls.values as string[]) {
+                const rows = await db.update(urlRules).set({ active: Boolean(urls.active) }).where(eq(urlRules.url, url)).returning({ id: urlRules.id, url: urlRules.url, active: urlRules.active });
+                if (rows.length) updatedURLs.push(rows[0]);
             }
         }
-        console.log("URL Updated");
 
-        const updatedPorts = [];
-
+        const updatedPorts: { id: number; port: number; active: boolean }[] = [];
         if (ports?.values?.length) {
-            for (const port of ports.values) {
-                const result = await query(
-                    "UPDATE port_rules SET active = $1 WHERE port = $2 RETURNING id, port, active",
-                    [ports.active, port]
-                );
-
-                if (result.rows.length) {
-                    updatedPorts.push(result.rows[0]);
-                }
+            for (const port of ports.values as number[]) {
+                const rows = await db.update(portRules).set({ active: Boolean(ports.active) }).where(eq(portRules.port, port)).returning({ id: portRules.id, port: portRules.port, active: portRules.active });
+                if (rows.length) updatedPorts.push(rows[0]);
             }
         }
-        console.log("Port Updated");
-        
+
         return res.status(201).json({ updated: [...updatedIPs, ...updatedURLs, ...updatedPorts]});
     } 
     catch (e) {
         console.error("Updates failed:", e);
+        return res.status(500).json({ error: "Failed to update rules" });
     }
 };
 
