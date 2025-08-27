@@ -29,3 +29,7 @@ export const query = (text: string, params?: any[]) => {
 };
 
 export const db = drizzle(pool);
+
+export const endPool = async () => {
+    await pool.end();
+};
