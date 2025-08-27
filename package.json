@@ -9,13 +9,15 @@
         "start": "node dist/index.js",
         "sql": "ts-node src/scripts/sql.ts",
         "db:generate": "drizzle-kit generate",
-		"db:migrate": "drizzle-kit migrate"
+        "db:migrate": "drizzle-kit migrate",
+        "db:seed": "ts-node src/scripts/mockDataPopulation.ts"
     },
     "repository": {
         "type": "git",
         "url": "git+https://github.com/LiorYanuka/Firewall.git"
     },
     "dependencies": {
+        "@faker-js/faker": "^9.9.0",
         "dotenv": "^17.2.1",
         "drizzle-orm": "^0.44.5",
         "express": "^5.1.0",
