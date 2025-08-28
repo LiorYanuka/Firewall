@@ -1,6 +1,9 @@
 import { Request, Response } from "express";
 import { processRules } from "../services/sqlCommandsService";
 import { RuleType, ModeType, ActionType } from "../types/rules";
+import logger from "../config/logger";
+import { ValidationError } from "../middleware/validationMiddleware";
+
 
 const isRuleType = (t: string): t is RuleType => t === "ip" || t === "url" || t === "port";
 
@@ -16,9 +19,13 @@ const handle = (action: ActionType) => async (req: Request, res: Response) => {
         await processRules(values, type, mode, action);
         const verb = action === "insert" ? "inserted" : "deleted";
         res.status(200).json({ message: `${type.toUpperCase()} rules ${verb} successfully` });
-    } catch (e) {
-        console.error(`Failed to ${action} ${type} rules:`, e);
+    } catch (e: any) {
+        if (e instanceof ValidationError) {
+            logger.warn(`Validation failed for ${type} ${action}: ${e.message}`, { details: e.details });
+            return res.status(400).json({ error: e.message, details: e.details ?? undefined })
+        }
         const errMsg = action === "insert" ? "insert" : "delete";
+        logger.error(`Failed to ${errMsg} ${type} rules:`, { error: e?.message ?? String(e) });
         res.status(500).json({ error: `Failed to ${errMsg} ${type} rules` });
     }
 };

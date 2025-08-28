@@ -1,6 +1,8 @@
 import express, { Request, Response } from "express"
 import { db } from "../db";
-import { ipRules, urlRules, portRules } from "../schema";
+import { ipRules } from "../schemas/ip.schema";
+import { urlRules } from "../schemas/url.schema";
+import { portRules } from "../schemas/port.schema";
 import { and, eq, inArray } from "drizzle-orm";
 
 export const getRules = async (req: Request, res: Response) => {
@@ -13,7 +15,7 @@ export const getRules = async (req: Request, res: Response) => {
             db.select({ id: portRules.id, port: portRules.port }).from(portRules).where(eq(portRules.mode, "blacklist")),
             db.select({ id: portRules.id, port: portRules.port }).from(portRules).where(eq(portRules.mode, "whitelist")),
         ]);
-
+        
         return res.status(200).json({ ip: { blacklist: ipB, whitelist: ipW }, url: { blacklist: urlB, whitelist: urlW }, port: { blacklist: portB, whitelist: portW } });
     } 
     catch (e) {

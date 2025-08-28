@@ -3,7 +3,7 @@ import { getRules, updateRules } from "../controllers/rules.controller"
 
 const router = express.Router();
 
-router.get('/retrieve', getRules);
-router.patch('/toggle', updateRules);
+router.get('/rules', getRules);
+router.patch('/rules', updateRules);
 
 export default router;

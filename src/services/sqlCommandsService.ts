@@ -1,7 +1,9 @@
 import { validateRules } from "../middleware/validationMiddleware";
 import { RuleType, ActionType, ModeType } from "../types/rules";
 import { db } from "../db";
-import { ipRules, urlRules, portRules } from "../schema";
+import { ipRules } from "../schemas/ip.schema";
+import { urlRules } from "../schemas/url.schema";
+import { portRules } from "../schemas/port.schema";
 import { and, eq, inArray } from "drizzle-orm";
 
 export const processRules = async (
