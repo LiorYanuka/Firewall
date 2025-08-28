@@ -1,62 +1,47 @@
-import express, { Request, Response } from "express"
-import { db } from "../db";
-import { ipRules } from "../schemas/ip.schema";
-import { urlRules } from "../schemas/url.schema";
-import { portRules } from "../schemas/port.schema";
-import { and, eq, inArray } from "drizzle-orm";
+import { Request, Response } from "express";
+import { getAllRules, updateRuleActiveStatus } from "../services/rules.service";
+import { RuleType, UpdatedRule, ErrorResponse } from "../types/rules";
+import { HTTP_STATUS } from "../types/constants";
 
-export const getRules = async (req: Request, res: Response) => {
-    try {
-        const [ipB, ipW, urlB, urlW, portB, portW] = await Promise.all([
-            db.select({ id: ipRules.id, ip: ipRules.ip }).from(ipRules).where(eq(ipRules.mode, "blacklist")),
-            db.select({ id: ipRules.id, ip: ipRules.ip }).from(ipRules).where(eq(ipRules.mode, "whitelist")),
-            db.select({ id: urlRules.id, url: urlRules.url }).from(urlRules).where(eq(urlRules.mode, "blacklist")),
-            db.select({ id: urlRules.id, url: urlRules.url }).from(urlRules).where(eq(urlRules.mode, "whitelist")),
-            db.select({ id: portRules.id, port: portRules.port }).from(portRules).where(eq(portRules.mode, "blacklist")),
-            db.select({ id: portRules.id, port: portRules.port }).from(portRules).where(eq(portRules.mode, "whitelist")),
-        ]);
-        
-        return res.status(200).json({ ip: { blacklist: ipB, whitelist: ipW }, url: { blacklist: urlB, whitelist: urlW }, port: { blacklist: portB, whitelist: portW } });
-    } 
-    catch (e) {
-        console.error("Retrieve rules failed:", e);
-        return res.status(500).json({ error: "Failed to retrieve rules" });
-    }
+export const getRules = async (_req: Request, res: Response) => {
+  try {
+    const rules = await getAllRules();
+    res.status(HTTP_STATUS.OK).json(rules);
+  } catch (err) {
+    const errorResponse: ErrorResponse = { error: "Failed to fetch rules" };
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json(errorResponse);
+  }
 };
 
-export const updateRules = async(req: Request, res: Response) => {
-    const { ips, urls, ports } = req.body ?? {};
+export const updateRules = async (req: Request, res: Response) => {
+  const { ips, urls, ports } = req.body ?? {};
+  const updates: Record<
+    string,
+    { values: (string | number)[]; active: boolean }
+  > = {
+    ip: ips,
+    url: urls,
+    port: ports,
+  };
 
-    try {
-        const updatedIPs: { id: number; ip: string; active: boolean }[] = [];
-        if (ips?.values?.length) {
-            for (const ip of ips.values as string[]) {
-                const rows = await db.update(ipRules).set({ active: Boolean(ips.active) }).where(eq(ipRules.ip, ip)).returning({ id: ipRules.id, ip: ipRules.ip, active: ipRules.active });
-                if (rows.length) updatedIPs.push(rows[0]);
-            }
-        }
+  try {
+    const updated: UpdatedRule[] = [];
 
-        const updatedURLs: { id: number; url: string; active: boolean }[] = [];
-        if (urls?.values?.length) {
-            for (const url of urls.values as string[]) {
-                const rows = await db.update(urlRules).set({ active: Boolean(urls.active) }).where(eq(urlRules.url, url)).returning({ id: urlRules.id, url: urlRules.url, active: urlRules.active });
-                if (rows.length) updatedURLs.push(rows[0]);
-            }
-        }
+    for (const type of Object.keys(updates) as RuleType[]) {
+      const data = updates[type];
+      if (!data?.values?.length) continue;
 
-        const updatedPorts: { id: number; port: number; active: boolean }[] = [];
-        if (ports?.values?.length) {
-            for (const port of ports.values as number[]) {
-                const rows = await db.update(portRules).set({ active: Boolean(ports.active) }).where(eq(portRules.port, port)).returning({ id: portRules.id, port: portRules.port, active: portRules.active });
-                if (rows.length) updatedPorts.push(rows[0]);
-            }
-        }
-
-        return res.status(201).json({ updated: [...updatedIPs, ...updatedURLs, ...updatedPorts]});
-    } 
-    catch (e) {
-        console.error("Updates failed:", e);
-        return res.status(500).json({ error: "Failed to update rules" });
+      const rows = await updateRuleActiveStatus(
+        type,
+        data.values,
+        Boolean(data.active)
+      );
+      updated.push(...rows);
     }
-};
 
+    res.status(HTTP_STATUS.CREATED).json({ updated });
+  } catch (err) {
+    const errorResponse: ErrorResponse = { error: "Failed to update rules" };
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json(errorResponse);
+  }
+};

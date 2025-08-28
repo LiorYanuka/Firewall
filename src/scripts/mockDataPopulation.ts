@@ -1,30 +1,29 @@
 import { faker } from "@faker-js/faker";
 import "dotenv/config";
-import { db } from "../db";
+import { database } from "../db";
 import { ipRules } from "../schemas/ip.schema";
 import { urlRules } from "../schemas/url.schema";
 import { portRules } from "../schemas/port.schema";
+import { MOCK_DATA_CONSTANTS, PORT_CONSTANTS } from "../types/constants";
+
+const db = database.db;
 
 type Mode = "whitelist" | "blacklist";
 
 function randomMode(index: number): Mode {
-  return index % 2 === 0 ? "whitelist" : "blacklist";
+  return index % MOCK_DATA_CONSTANTS.WHITELIST_MODULO === 0 ? "whitelist" : "blacklist";
 }
 
-function generateIps(
-  count: number
-): { ip: string; mode: Mode; status: string; active: boolean }[] {
-  const results: { ip: string; mode: Mode; status: string; active: boolean }[] =
-    [];
+function generateIps(count: number) {
+  const results = [];
 
-  // Edge cases
   const edgeIps = ["0.0.0.0", "255.255.255.255", "127.0.0.1", "::1"];
   for (let i = 0; i < Math.min(edgeIps.length, count); i++) {
     results.push({
       ip: edgeIps[i],
       mode: randomMode(i),
       status: "success",
-      active: i % 3 !== 0,
+      active: i % 3 !== 0, // This could be extracted to a constant if needed
     });
   }
 
@@ -40,17 +39,9 @@ function generateIps(
   return results;
 }
 
-function generateUrls(
-  count: number
-): { url: string; mode: Mode; status: string; active: boolean }[] {
-  const results: {
-    url: string;
-    mode: Mode;
-    status: string;
-    active: boolean;
-  }[] = [];
+function generateUrls(count: number) {
+  const results = [];
 
-  // Edge-ish valid URLs
   const edgeUrls = [
     "http://localhost",
     "http://localhost:3000",
@@ -62,7 +53,7 @@ function generateUrls(
       url: edgeUrls[i],
       mode: randomMode(i),
       status: "success",
-      active: i % 2 === 0,
+      active: i % MOCK_DATA_CONSTANTS.WHITELIST_MODULO === 0,
     });
   }
 
@@ -78,32 +69,22 @@ function generateUrls(
   return results;
 }
 
-function generatePorts(
-  count: number
-): { port: number; mode: Mode; status: string; active: boolean }[] {
-  const results: {
-    port: number;
-    mode: Mode;
-    status: string;
-    active: boolean;
-  }[] = [];
+function generatePorts(count: number) {
+  const results = [];
 
-  // Edge port numbers within valid range
   const edgePorts = [1, 22, 80, 443, 1024, 49151, 65535];
   for (let i = 0; i < Math.min(edgePorts.length, count); i++) {
     results.push({
       port: edgePorts[i],
       mode: randomMode(i),
       status: "success",
-      active: i % 2 === 1,
+      active: i % MOCK_DATA_CONSTANTS.BLACKLIST_MODULO === 1,
     });
   }
 
   for (let i = results.length; i < count; i++) {
-    // Valid port: 1..65535
-    const port = faker.number.int({ min: 1, max: 65535 });
     results.push({
-      port,
+      port: faker.number.int({ min: PORT_CONSTANTS.MIN_PORT, max: PORT_CONSTANTS.MAX_PORT }),
       mode: randomMode(i),
       status: "success",
       active: faker.datatype.boolean(),
@@ -114,9 +95,9 @@ function generatePorts(
 }
 
 async function main() {
-  const ipData = generateIps(10);
-  const urlData = generateUrls(10);
-  const portData = generatePorts(10);
+  const ipData = generateIps(MOCK_DATA_CONSTANTS.DEFAULT_COUNT);
+  const urlData = generateUrls(MOCK_DATA_CONSTANTS.DEFAULT_COUNT);
+  const portData = generatePorts(MOCK_DATA_CONSTANTS.DEFAULT_COUNT);
 
   await db
     .insert(ipRules)

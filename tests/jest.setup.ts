@@ -1,12 +1,12 @@
-import { endPool } from "../src/db";
+import { database } from "../src/db";
 
 beforeAll(() => {
-    jest.spyOn(console, "log").mockImplementation(() => {});
-    jest.spyOn(console, "warn").mockImplementation(() => {});
-    jest.spyOn(console, "error").mockImplementation(() => {});
+  jest.spyOn(console, "log").mockImplementation(() => {});
+  jest.spyOn(console, "warn").mockImplementation(() => {});
+  jest.spyOn(console, "error").mockImplementation(() => {});
 });
 
 afterAll(async () => {
-    jest.restoreAllMocks();
-    await endPool();
+  jest.restoreAllMocks();
+  await database.endPool();
 });
