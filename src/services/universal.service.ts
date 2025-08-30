@@ -16,52 +16,48 @@ type Handler = {
 const handlers: Record<RuleType, Handler> = {
   ip: {
     insert: async (values, mode) => {
+      const ipValues = values as string[];
       await db
         .insert(ipRules)
-        .values((values as string[]).map((ip) => ({ ip, mode })))
+        .values(ipValues.map((ip) => ({ ip, mode })))
         .onConflictDoNothing({ target: [ipRules.ip] });
     },
     remove: async (values, mode) => {
+      const ipValues = values as string[];
       await db
         .delete(ipRules)
-        .where(
-          and(inArray(ipRules.ip, values as string[]), eq(ipRules.mode, mode))
-        );
+        .where(and(inArray(ipRules.ip, ipValues), eq(ipRules.mode, mode)));
     },
   },
   url: {
     insert: async (values, mode) => {
+      const urlValues = values as string[];
       await db
         .insert(urlRules)
-        .values((values as string[]).map((url) => ({ url, mode })))
+        .values(urlValues.map((url) => ({ url, mode })))
         .onConflictDoNothing({ target: [urlRules.url] });
     },
     remove: async (values, mode) => {
+      const urlValues = values as string[];
       await db
         .delete(urlRules)
-        .where(
-          and(
-            inArray(urlRules.url, values as string[]),
-            eq(urlRules.mode, mode)
-          )
-        );
+        .where(and(inArray(urlRules.url, urlValues), eq(urlRules.mode, mode)));
     },
   },
   port: {
     insert: async (values, mode) => {
+      const portValues = values as number[];
       await db
         .insert(portRules)
-        .values((values as number[]).map((port) => ({ port, mode })))
+        .values(portValues.map((port) => ({ port, mode })))
         .onConflictDoNothing({ target: [portRules.port] });
     },
     remove: async (values, mode) => {
+      const portValues = values as number[];
       await db
         .delete(portRules)
         .where(
-          and(
-            inArray(portRules.port, values as number[]),
-            eq(portRules.mode, mode)
-          )
+          and(inArray(portRules.port, portValues), eq(portRules.mode, mode))
         );
     },
   },
@@ -74,7 +70,6 @@ export const processRules = async (
   action: ActionType
 ) => {
   const cleaned = validateRules({ values: data, mode }, rule);
-
   const handler = handlers[rule];
 
   if (action === "insert") {
@@ -82,10 +77,4 @@ export const processRules = async (
   } else {
     await handler.remove(cleaned, mode);
   }
-
-  console.log(
-    `${rule.toUpperCase()} ${action.toUpperCase()} completed for ${
-      cleaned.length
-    } item(s).`
-  );
 };
