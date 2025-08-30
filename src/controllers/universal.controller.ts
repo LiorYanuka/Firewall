@@ -9,8 +9,6 @@ import {
   ErrorResponse,
   ApiError,
 } from "../types/rules";
-import logger from "../config/logger";
-import { ValidationError } from "../middleware/validation.middleware";
 import { HTTP_STATUS } from "../types/constants";
 
 const isRuleType = (t: string): t is RuleType =>
@@ -26,39 +24,14 @@ const handle = (action: ActionType) => async (req: Request, res: Response) => {
       .json({ error: "Invalid type. Use 'ip' | 'url' | 'port'." });
   }
 
-  try {
-    await processRules(values, type, mode, action);
-    logger.info(`${type.toUpperCase()} rules ${action} completed`, {
-      valuesCount: values?.length ?? 0,
-      mode,
-    });
+  await processRules(values, type, mode, action);
 
-    const verb = action === "insert" ? "inserted" : "deleted";
-    const response: RuleResponse = {
-      message: `${type.toUpperCase()} rules ${verb} successfully`,
-    };
-    res.status(HTTP_STATUS.OK).json(response);
-  } catch (e: unknown) {
-    if (e instanceof ValidationError) {
-      logger.warn(`Validation failed for ${type} ${action}: ${e.message}`, {
-        details: e.details,
-      });
-      const errorResponse: ErrorResponse = {
-        error: e.message,
-        details: e.details ?? undefined,
-      };
-      return res.status(HTTP_STATUS.BAD_REQUEST).json(errorResponse);
-    }
-    const errMsg = action === "insert" ? "insert" : "delete";
-    const error = e as ApiError;
-    logger.error(`Failed to ${errMsg} ${type} rules:`, {
-      error: error?.message ?? String(e),
-    });
-    const errorResponse: ErrorResponse = {
-      error: `Failed to ${errMsg} ${type} rules`,
-    };
-    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json(errorResponse);
-  }
+  const verb = action === "insert" ? "inserted" : "deleted";
+  const response: RuleResponse = {
+    message: `${type.toUpperCase()} rules ${verb} successfully`,
+  };
+
+  res.status(HTTP_STATUS.OK).json(response);
 };
 
 export const addRules = handle("insert");

@@ -4,8 +4,5 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const server_1 = __importDefault(require("./server"));
-const env_1 = require("./config/env");
-require("./config/logger");
-server_1.default.listen(env_1.config.port, () => {
-    console.log(`Server is running on localhost:${env_1.config.port} in ${env_1.config.env} mode`);
-});
+const startup_middleware_1 = require("./middleware/startup.middleware");
+(0, startup_middleware_1.setupServer)(server_1.default);

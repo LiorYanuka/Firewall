@@ -5,13 +5,16 @@ import { ipRules } from "../schemas/ip.schema";
 import { urlRules } from "../schemas/url.schema";
 import { portRules } from "../schemas/port.schema";
 import { MOCK_DATA_CONSTANTS, PORT_CONSTANTS } from "../types/constants";
+import { loggingService } from "../services/logging.service";
 
 const db = database.db;
 
 type Mode = "whitelist" | "blacklist";
 
 function randomMode(index: number): Mode {
-  return index % MOCK_DATA_CONSTANTS.WHITELIST_MODULO === 0 ? "whitelist" : "blacklist";
+  return index % MOCK_DATA_CONSTANTS.WHITELIST_MODULO === 0
+    ? "whitelist"
+    : "blacklist";
 }
 
 function generateIps(count: number) {
@@ -84,7 +87,10 @@ function generatePorts(count: number) {
 
   for (let i = results.length; i < count; i++) {
     results.push({
-      port: faker.number.int({ min: PORT_CONSTANTS.MIN_PORT, max: PORT_CONSTANTS.MAX_PORT }),
+      port: faker.number.int({
+        min: PORT_CONSTANTS.MIN_PORT,
+        max: PORT_CONSTANTS.MAX_PORT,
+      }),
       mode: randomMode(i),
       status: "success",
       active: faker.datatype.boolean(),
@@ -102,17 +108,19 @@ async function main() {
   await db
     .insert(ipRules)
     .values(ipData)
-    .onConflictDoNothing({ target: [ipRules.ip, ipRules.mode] });
+    .onConflictDoNothing({ target: [ipRules.ip] });
+
   await db
     .insert(urlRules)
     .values(urlData)
-    .onConflictDoNothing({ target: [urlRules.url, urlRules.mode] });
+    .onConflictDoNothing({ target: [urlRules.url] });
+
   await db
     .insert(portRules)
     .values(portData)
-    .onConflictDoNothing({ target: [portRules.port, portRules.mode] });
+    .onConflictDoNothing({ target: [portRules.port] });
 
-  console.log("Inserted mock data:", {
+  loggingService.info("Mock data population completed", {
     ip_rules: ipData.length,
     url_rules: urlData.length,
     port_rules: portData.length,
@@ -120,6 +128,7 @@ async function main() {
 }
 
 main().catch((err) => {
-  console.error("Mock data population failed:", err);
+  const error = err as Error;
+  loggingService.error("Mock data population failed", { error: error.message });
   process.exit(1);
 });

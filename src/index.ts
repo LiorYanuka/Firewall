@@ -1,9 +1,4 @@
 import app from "./server";
-import { config } from "./config/env";
-import logger from "./config/logger";
+import { setupServer } from "./middleware/startup.middleware";
 
-app.listen(config.port, () => {
-  logger.info(
-    `Server is running on localhost:${config.port} in ${config.env} mode`
-  );
-});
+setupServer(app);

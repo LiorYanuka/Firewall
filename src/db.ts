@@ -2,6 +2,7 @@ import { Pool } from "pg";
 import { drizzle, NodePgDatabase } from "drizzle-orm/node-postgres";
 import { config } from "./config/env";
 import { DB_CONSTANTS } from "./types/constants";
+import { loggingService } from "./services/logging.service";
 
 class Database {
   private static instance: Database;
@@ -22,17 +23,24 @@ class Database {
 
   async connectWithRetry(attempt = 1): Promise<void> {
     const baseDelay = config.connectionInterval;
-    const delay = Math.min(baseDelay * 2 ** (attempt - 1), DB_CONSTANTS.MAX_RETRY_DELAY_MS);
+    const delay = Math.min(
+      baseDelay * 2 ** (attempt - 1),
+      DB_CONSTANTS.MAX_RETRY_DELAY_MS
+    );
 
     try {
       await this.pool.query(DB_CONSTANTS.HEALTH_CHECK_QUERY);
-      console.log("Database connected successfully");
+      loggingService.database({
+        operation: "connect",
+        attempt,
+      });
     } catch (err) {
-      console.error(
-        `Database connection failed (attempt ${attempt}):`,
-        (err as Error).message
-      );
-      console.log(`Retrying in ${delay}ms...`);
+      const error = err as Error;
+      loggingService.database({
+        operation: "connect",
+        attempt,
+        error: error.message,
+      });
       await new Promise((resolve) => setTimeout(resolve, delay));
       return this.connectWithRetry(attempt + 1);
     }

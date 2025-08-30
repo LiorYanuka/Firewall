@@ -17,8 +17,28 @@ const PortSchema = z.preprocess(
 const UrlItemSchema = z.string().transform((s, ctx) => {
   try {
     const str = s.trim().toLowerCase();
-    const withProto = /^(https?:)?\/\//i.test(str) ? str : `https://${str}`;
+
+    // Check for malformed URLs with three slashes (http:///path)
+    if (/^https?:\/\/\//.test(str)) {
+      throw new Error("Malformed URL with invalid triple slash");
+    }
+
+    // Check if it already has a protocol
+    const hasProtocol = /^https?:\/\//i.test(str);
+
+    // If it has a protocol, validate it directly
+    if (hasProtocol) {
+      const u = new URL(str);
+      /* istanbul ignore next */
+      if (!u.hostname) throw new Error("Missing hostname");
+      const url = u.toString();
+      return url.endsWith("/") ? url.slice(0, -1) : url;
+    }
+
+    // If no protocol, add https:// and validate
+    const withProto = `https://${str}`;
     const u = new URL(withProto);
+    /* istanbul ignore next */
     if (!u.hostname) throw new Error("Missing hostname");
     const url = u.toString();
     return url.endsWith("/") ? url.slice(0, -1) : url;
@@ -77,7 +97,9 @@ export class ValidationError extends Error {
 
 export const validateRules = (data: unknown, rule: RuleType) => {
   const result = Schemas[rule].safeParse(data);
-  if (!result.success)
+  if (!result.success) {
     throw new ValidationError("Validation failed", result.error.flatten());
+  }
+
   return result.data.values;
 };

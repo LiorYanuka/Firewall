@@ -1,6 +1,7 @@
 import "dotenv/config";
 import { database } from "../db";
 import { EXIT_CODES } from "../types/constants";
+import { loggingService } from "../services/logging.service";
 
 const pool = database.pool;
 
@@ -41,10 +42,11 @@ async function ensureRulesTables(): Promise<void> {
 
 async function main(): Promise<void> {
   await ensureRulesTables();
-  console.log("Created ip, url, port tables");
+  loggingService.allTablesCreated();
 }
 
 main().catch((err) => {
-  console.error("SQL tables creation failed:", err);
+  const error = err as Error;
+  loggingService.error("SQL tables creation failed", { error: error.message });
   process.exit(EXIT_CODES.ERROR);
 });

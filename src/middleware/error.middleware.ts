@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import logger from "../config/logger";
+import { loggingService } from "../services/logging.service";
 import { ValidationError } from "./validation.middleware";
 import { HTTP_STATUS } from "../types/constants";
 import { ApiError, ErrorResponse } from "../types/rules";
@@ -11,13 +11,6 @@ export function errorHandler(
   _next: NextFunction
 ) {
   if (err instanceof ValidationError) {
-    logger.warn(`Validation failed: ${err.message}`, {
-      stack: err.stack,
-      details: err.details,
-      method: req.method,
-      url: req.originalUrl,
-      body: req.body,
-    });
     const errorResponse: ErrorResponse = {
       error: err.message,
       details: err.details,
@@ -32,13 +25,10 @@ export function errorHandler(
       : HTTP_STATUS.INTERNAL_SERVER_ERROR;
   const message = apiError?.message ?? "Internal Server Error";
 
-  logger.error("Unhandled error", {
-    status,
-    message,
-    stack: apiError?.stack,
+  loggingService.appError({
+    error: message,
     method: req.method,
     url: req.originalUrl,
-    body: req.body,
   });
 
   res.status(status).json({ error: message });
