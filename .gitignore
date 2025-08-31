@@ -1,16 +1,24 @@
 # build outputs
-/dist
+Backend/dist
 
 # dependencies
-/node_modules
+Backend/node_modules
 
 # environment file
-.env
-.env.local
-.env.*.local
+Backend/.env
+Backend/.env.local
+Backend/.env.*.local
 
 # logs
 npm-debug.log*
 
 # tests
-/coverage
+Backend/coverage
+
+# Frontend (when you create it)
+Frontend/node_modules
+Frontend/dist
+Frontend/build
+Frontend/.env
+Frontend/.env.local
+Frontend/.env.*.local
