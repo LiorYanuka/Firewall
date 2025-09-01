@@ -14,7 +14,10 @@ export default function TabsBar() {
   ];
 
   return (
-    <div className="w-full border-b border-[var(--separator)] bg-white text-black">
+    <div
+      className="w-full border-b border-[var(--separator)]"
+      style={{ background: "var(--surface)", color: "var(--foreground)" }}
+    >
       <div className="max-w-7xl mx-auto px-4">
         <nav className="flex space-x-6 overflow-x-auto" aria-label="Tabs">
           {tabs.map((tab) => {

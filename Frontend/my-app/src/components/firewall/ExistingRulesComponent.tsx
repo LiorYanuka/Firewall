@@ -142,7 +142,11 @@ export default function ExistingRulesComponent() {
             onChange={(e) =>
               setFilter(e.target.value as "all" | "active" | "inactive")
             }
-            className="px-3 py-1 border border-gray-700 bg-black text-white rounded-md text-sm"
+            className="px-3 py-1 border border-[var(--separator)] rounded-md text-sm"
+            style={{
+              background: "var(--input-bg)",
+              color: "var(--foreground)",
+            }}
           >
             <option value="all">All Rules</option>
             <option value="active">Active Only</option>
@@ -192,7 +196,7 @@ export default function ExistingRulesComponent() {
                       <span
                         className={`px-2 py-1 rounded-full text-xs font-medium ${
                           rule.active
-                            ? "bg-gray-800 text-white"
+                            ? "mode-chip"
                             : "bg-gray-100 text-gray-800"
                         }`}
                       >

@@ -1,7 +1,9 @@
 {
   "/Overview/page": "app/Overview/page.js",
+  "/api-interface/page": "app/api-interface/page.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js",
   "/firewall-rules/page": "app/firewall-rules/page.js",
   "/kernel-modules/page": "app/kernel-modules/page.js",
-  "/page": "app/page.js",
+  "/logs-testing/page": "app/logs-testing/page.js",
   "/rules/page": "app/rules/page.js"
 }
