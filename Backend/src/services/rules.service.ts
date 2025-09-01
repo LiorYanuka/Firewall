@@ -17,11 +17,21 @@ const ruleMap: Record<RuleType, RuleMapEntry> = {
 export const getAllRules = async () => {
   const queries = Object.entries(ruleMap).flatMap(([type, { table }]) => [
     db
-      .select({ id: table.id, value: table[ruleMap[type as RuleType].column] })
+      .select({
+        id: table.id,
+        value: table[ruleMap[type as RuleType].column],
+        active: table.active,
+        mode: table.mode,
+      })
       .from(table)
       .where(eq(table.mode, "blacklist")),
     db
-      .select({ id: table.id, value: table[ruleMap[type as RuleType].column] })
+      .select({
+        id: table.id,
+        value: table[ruleMap[type as RuleType].column],
+        active: table.active,
+        mode: table.mode,
+      })
       .from(table)
       .where(eq(table.mode, "whitelist")),
   ]);

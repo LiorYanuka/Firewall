@@ -26,10 +26,52 @@ export default function ExistingRulesComponent() {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetch(`${config.serverUrl}/rules`);
+      const response = await fetch(`${config.apiBaseUrl}/rules`);
       if (response.ok) {
-        const data = await response.json();
-        setRules(data.rules || []);
+        const data: {
+          [k in "ip" | "port" | "url"]?: {
+            blacklist?: Array<{
+              id: number;
+              value: string | number;
+              active?: boolean;
+            }>;
+            whitelist?: Array<{
+              id: number;
+              value: string | number;
+              active?: boolean;
+            }>;
+          };
+        } = await response.json();
+        const flattened: Rule[] = [];
+        (["ip", "port", "url"] as const).forEach((type) => {
+          (["blacklist", "whitelist"] as const).forEach((mode) => {
+            const list: Array<{
+              id: number;
+              value: string | number;
+              active?: boolean;
+            }> = (data?.[type]?.[mode] || []) as Array<{
+              id: number;
+              value: string | number;
+              active?: boolean;
+            }>;
+            list.forEach(
+              (row: {
+                id: number;
+                value: string | number;
+                active?: boolean;
+              }) => {
+                flattened.push({
+                  id: row.id,
+                  type,
+                  mode,
+                  value: String(row.value),
+                  active: Boolean(row.active),
+                });
+              }
+            );
+          });
+        });
+        setRules(flattened);
       } else {
         setError("Failed to fetch rules");
       }
@@ -40,25 +82,37 @@ export default function ExistingRulesComponent() {
     }
   };
 
-  const toggleRule = async (ruleId: number, currentActive: boolean) => {
+  type PatchPayload = {
+    ips?: { values: string[]; active: boolean };
+    urls?: { values: string[]; active: boolean };
+    ports?: { values: number[]; active: boolean };
+  };
+  const toggleRule = async (rule: Rule) => {
     try {
-      const response = await fetch(`${config.serverUrl}/rules`, {
+      const payload: PatchPayload = {};
+      if (rule.type === "ip")
+        payload.ips = { values: [rule.value], active: !rule.active };
+      if (rule.type === "url")
+        payload.urls = { values: [rule.value], active: !rule.active };
+      if (rule.type === "port")
+        payload.ports = { values: [Number(rule.value)], active: !rule.active };
+
+      const response = await fetch(`${config.apiBaseUrl}/rules`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          ruleId,
-          active: !currentActive,
-        }),
+        body: JSON.stringify(payload),
       });
 
       if (response.ok) {
         setRules((prev) =>
-          prev.map((rule) =>
-            rule.id === ruleId ? { ...rule, active: !currentActive } : rule
+          prev.map((r) =>
+            r.id === rule.id ? { ...r, active: !rule.active } : r
           )
         );
+        // Ensure we reflect server truth (in case of side effects)
+        fetchRules();
       } else {
         setError("Failed to update rule");
       }
@@ -67,29 +121,23 @@ export default function ExistingRulesComponent() {
     }
   };
 
-  const deleteRule = async (ruleId: number, ruleType: string) => {
+  const deleteRule = async (rule: Rule) => {
     if (!confirm("Are you sure you want to delete this rule?")) return;
 
     try {
-      const endpoint =
-        ruleType === "ip"
-          ? "/ip/remove"
-          : ruleType === "port"
-          ? "/port/remove"
-          : "/url/remove";
-
-      const response = await fetch(`${config.serverUrl}${endpoint}`, {
+      const response = await fetch(`${config.apiBaseUrl}/${rule.type}`, {
         method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          ruleId,
+          values: [rule.type === "port" ? Number(rule.value) : rule.value],
+          mode: rule.mode,
         }),
       });
 
       if (response.ok) {
-        setRules((prev) => prev.filter((rule) => rule.id !== ruleId));
+        setRules((prev) => prev.filter((r) => r.id !== rule.id));
+        // Re-fetch to ensure consistency with server
+        fetchRules();
       } else {
         setError("Failed to delete rule");
       }
@@ -215,7 +263,7 @@ export default function ExistingRulesComponent() {
 
                 <div className="flex items-center space-x-2">
                   <button
-                    onClick={() => toggleRule(rule.id, rule.active)}
+                    onClick={() => toggleRule(rule)}
                     className={`px-3 py-1 rounded-md text-sm font-medium ${
                       rule.active
                         ? "bg-white text-black hover:bg-gray-200"
@@ -225,7 +273,7 @@ export default function ExistingRulesComponent() {
                     {rule.active ? "Deactivate" : "Activate"}
                   </button>
                   <button
-                    onClick={() => deleteRule(rule.id, rule.type)}
+                    onClick={() => deleteRule(rule)}
                     className="px-3 py-1 bg-white text-red-600 rounded-md text-sm font-medium hover:bg-gray-200"
                   >
                     Delete
