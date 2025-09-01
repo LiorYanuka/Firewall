@@ -221,7 +221,12 @@ export default function AddRuleComponent() {
                       ? "80"
                       : "example.com"
                   }
-                  className="flex-1 px-3 py-2 border border-gray-700 bg-black text-white rounded-md focus:outline-none focus:ring-2 focus:ring-white"
+                  className="flex-1 px-3 py-2 border border-[var(--separator)] rounded-md focus:outline-none focus:ring-2"
+                  style={{
+                    background: "var(--input-bg)",
+                    color: "var(--foreground)",
+                    outlineColor: "var(--tint)",
+                  }}
                 />
                 {form.values.length > 1 && (
                   <button

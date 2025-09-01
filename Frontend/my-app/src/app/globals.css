@@ -1,11 +1,14 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #111111;
+  --background: #f7f7f9; /* iOS grouped background */
+  --foreground: #2c2c2e; /* Softer than pure black */
   --tint: #0a84ff; /* iOS blue */
   --separator: #e5e5ea;
-  --secondary: #6b7280;
+  --secondary: #6f6f73; /* iOS secondary label */
+  --surface: #ffffff; /* cards, bars */
+  --surface-elevated: #ffffff; /* elevated cards */
+  --input-bg: #ffffff;
 }
 
 @theme inline {
@@ -16,11 +19,16 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Theme override via data-theme attribute */
+[data-theme="dark"] {
+  --background: #161618; /* softer than pure black */
+  --foreground: #f2f2f4;
+  --tint: #0a84ff;
+  --separator: #2a2a2c;
+  --secondary: #a3a3a8;
+  --surface: #1d1d20;
+  --surface-elevated: #26262a;
+  --input-bg: #1f1f23;
 }
 
 body {
@@ -32,7 +40,7 @@ body {
 }
 
 .card {
-  background: #fff;
+  background: var(--surface);
   border: 1px solid var(--separator);
   border-radius: 14px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
@@ -42,10 +50,18 @@ body {
   border: 1px solid var(--separator);
   padding: 8px 12px;
   border-radius: 10px;
+  background: var(--surface);
+  color: var(--secondary);
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 
 .segmented .active {
-  background: var(--tint);
-  color: #fff;
-  border-color: var(--tint);
+  background: var(--foreground);
+  color: var(--surface);
+  border-color: var(--foreground);
+}
+
+.mode-chip {
+  background: var(--foreground);
+  color: var(--surface);
 }
