@@ -1,18 +1,41 @@
+"use client";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export default function Navbar() {
+  const pathname = usePathname();
+
+  const links = [
+    { href: "/Overview", label: "Overview" },
+    { href: "/kernel-modules", label: "Kernel Modules" },
+    { href: "/firewall-rules", label: "Rules" },
+    { href: "/api-interface", label: "API" },
+    { href: "/logs-testing", label: "Logs" },
+    { href: "/Settings", label: "Settings" },
+    { href: "/Profile", label: "Profile" },
+  ];
+
+  const linkCls = (href: string) =>
+    pathname === href
+      ? "text-[var(--tint)] font-semibold"
+      : "text-[var(--secondary)] hover:text-black";
+
   return (
-    <nav className="flex items-center justify-between p-4 bg-gray-900 text-white">
-      <h1 className="font-bold text-lg">Firewall</h1>
-      <div className="space-x-4">
-        <Link href="/" className="hover:text-gray-300 transition-colors" aria-label="Home">🏠</Link>
-        <Link href="/Overview" className="hover:text-gray-300 transition-colors">Overview</Link>
-        <Link href="/kernel-modules" className="hover:text-gray-300 transition-colors">Kernel Modules</Link>
-        <Link href="/firewall-rules" className="hover:text-gray-300 transition-colors">Firewall Rules</Link>
-        <Link href="/api-interface" className="hover:text-gray-300 transition-colors">API Interface</Link>
-        <Link href="/logs-testing" className="hover:text-gray-300 transition-colors">Logs & Testing</Link>
-        <Link href="/Settings" className="hover:text-gray-300 transition-colors">Settings</Link>
-        <Link href="/Profile" className="hover:text-gray-300 transition-colors">Profile</Link>
+    <nav className="sticky top-0 z-20 backdrop-blur bg-white/80 border-b border-[var(--separator)] text-black">
+      <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
+        <div className="flex items-center space-x-3">
+          <Link href="/" aria-label="Home" className="text-xl">
+            🏠
+          </Link>
+          <h1 className="font-semibold text-[17px] tracking-tight">Firewall</h1>
+        </div>
+        <div className="space-x-6 text-sm">
+          {links.map((l) => (
+            <Link key={l.href} href={l.href} className={linkCls(l.href)}>
+              {l.label}
+            </Link>
+          ))}
+        </div>
       </div>
     </nav>
   );

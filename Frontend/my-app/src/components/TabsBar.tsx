@@ -14,7 +14,7 @@ export default function TabsBar() {
   ];
 
   return (
-    <div className="w-full border-b border-gray-200 bg-white">
+    <div className="w-full border-b border-[var(--separator)] bg-white text-black">
       <div className="max-w-7xl mx-auto px-4">
         <nav className="flex space-x-6 overflow-x-auto" aria-label="Tabs">
           {tabs.map((tab) => {
@@ -25,8 +25,8 @@ export default function TabsBar() {
                 href={tab.href}
                 className={
                   isActive
-                    ? "py-3 border-b-2 border-blue-600 text-blue-600"
-                    : "py-3 text-gray-600 hover:text-gray-900"
+                    ? "py-3 border-b-2 border-[var(--tint)] text-[var(--tint)]"
+                    : "py-3 text-[var(--secondary)] hover:text-black"
                 }
               >
                 {tab.label}
@@ -38,5 +38,3 @@ export default function TabsBar() {
     </div>
   );
 }
-
-
