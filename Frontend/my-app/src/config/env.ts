@@ -42,15 +42,10 @@ if (isServer) {
 } else {
   const parsedClient = ClientEnvSchema.safeParse(process.env);
   const publicEnv = parsedClient.success ? parsedClient.data : {};
-  const browserOrigin =
-    typeof window !== "undefined" ? window.location.origin : "";
   envData = {
     ENV: (publicEnv.NEXT_PUBLIC_ENV as (typeof ENVIRONMENTS)[number]) || "dev",
     PORT: 0,
-    SERVER_URL:
-      publicEnv.NEXT_PUBLIC_SERVER_URL ||
-      browserOrigin ||
-      "http://localhost:3000",
+    SERVER_URL: publicEnv.NEXT_PUBLIC_SERVER_URL || "http://localhost:3000",
   };
 }
 
@@ -77,7 +72,7 @@ export const config = {
   serverUrl: envData.SERVER_URL,
   isDev: envData.ENV === "dev",
   isProd: envData.ENV === "production",
-  apiBaseUrl: envData.SERVER_URL,
+  apiBaseUrl: `${envData.SERVER_URL}/api/firewall`,
   database: DATABASES_BY_ENV[envData.ENV],
 } as const;
 

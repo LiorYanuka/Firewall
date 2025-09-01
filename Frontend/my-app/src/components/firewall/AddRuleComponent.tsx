@@ -83,14 +83,9 @@ export default function AddRuleComponent() {
 
     setIsLoading(true);
     try {
-      const endpoint =
-        form.ruleType === "ip"
-          ? "/ip/add"
-          : form.ruleType === "port"
-          ? "/port/add"
-          : "/url/add";
+      const endpoint = `/${form.ruleType}`;
 
-      const response = await fetch(`${config.serverUrl}${endpoint}`, {
+      const response = await fetch(`${config.apiBaseUrl}${endpoint}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
