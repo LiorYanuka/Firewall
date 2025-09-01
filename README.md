@@ -12,9 +12,20 @@ cd Firewall
 # Install dependencies
 npm run install:all
 
-# Copy environment files
-cp Backend/env.example Backend/.env
-cp Frontend/my-app/env.example Frontend/my-app/.env.local
+# Create environment files
+# Backend (.env)
+echo "ENV=dev
+PORT=3000
+DATABASE_URI_DEV=postgres://user:password@localhost:5432/firewall_dev
+DATABASE_URI_PROD=postgres://user:password@localhost:5432/firewall_prod
+DB_CONNECTION_INTERVAL=1000" > Backend/.env
+
+# Frontend (.env.local)
+echo "ENV=dev
+PORT=3001
+SERVER_URL=http://localhost:3000
+NEXT_PUBLIC_ENV=dev
+NEXT_PUBLIC_SERVER_URL=http://localhost:3000" > Frontend/my-app/.env.local
 
 # Start both servers
 npm run dev
@@ -25,6 +36,7 @@ npm run dev
 ## 🔧 Environment Setup
 
 ### Backend (.env)
+
 ```bash
 ENV=dev
 PORT=3000
@@ -34,27 +46,30 @@ DB_CONNECTION_INTERVAL=1000
 ```
 
 ### Frontend (.env.local)
+
 ```bash
 ENV=dev
 PORT=3001
-SERVER_URL=http://localhost:3000
-NEXT_PUBLIC_ENV=dev
+SERVER_URL=http://localhost:3000  # used on the server side (Next.js)
+NEXT_PUBLIC_ENV=dev               # used in the browser
+NEXT_PUBLIC_SERVER_URL=http://localhost:3000
 ```
 
 ## 🌐 API Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/ip/add`, `/port/add`, `/url/add` | Add rules |
-| DELETE | `/ip/remove`, `/port/remove`, `/url/remove` | Remove rules |
-| GET | `/rules` | Get all rules |
-| PATCH | `/rules` | Update rule status |
+| Method | Endpoint                                    | Description        |
+| ------ | ------------------------------------------- | ------------------ |
+| POST   | `/api/firewall/:type` (`ip`\|`url`\|`port`) | Add rules          |
+| DELETE | `/api/firewall/:type` (`ip`\|`url`\|`port`) | Remove rules       |
+| GET    | `/api/firewall/rules`                       | Get all rules      |
+| PATCH  | `/api/firewall/rules`                       | Update rule status |
 
 **Body Format**: `{ values: string[], mode: "whitelist"|"blacklist" }`
 
 ## 🎯 Features
 
 ### Backend
+
 - Environment config with Zod validation
 - Winston logging with console override
 - PostgreSQL + Drizzle ORM
@@ -62,6 +77,7 @@ NEXT_PUBLIC_ENV=dev
 - Full TypeScript implementation
 
 ### Frontend
+
 - Next.js 15 with App Router
 - Responsive Tailwind CSS UI
 - Firewall rules management (add/view/toggle/delete)
@@ -84,6 +100,11 @@ npm run dev          # Start both servers
 npm run build        # Build both apps
 npm run test         # Run backend tests
 npm run install:all  # Install all dependencies
+
+# Backend database utilities (run inside Backend/ or via npm --workspace)
+npm run -w Backend db:generate  # Generate Drizzle migrations
+npm run -w Backend db:migrate   # Apply migrations
+npm run -w Backend db:seed      # Seed mock data
 ```
 
 ## 🛡️ Security & Logging
