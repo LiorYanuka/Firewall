@@ -31,7 +31,7 @@ export default function Navbar() {
                 Welcome back, Admin User
               </div>
               <h1 className="font-semibold text-[20px] tracking-tight">
-                CheckPoint Firewall Dashboard
+                Yanuka`s Firewall Dashboard
               </h1>
             </div>
           </div>
