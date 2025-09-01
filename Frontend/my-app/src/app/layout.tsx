@@ -4,7 +4,6 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ClientLoggerInit from "@/components/ClientLoggerInit";
-import TabsBar from "@/components/TabsBar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,8 +15,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = 
-{
+export const metadata: Metadata = {
   title: "Firewall",
   description: "By Lior Yanuka",
 };
@@ -29,11 +27,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
         <div className="flex flex-col min-h-screen">
           <ClientLoggerInit />
           <Navbar />
-          <TabsBar />
           {children}
           <Footer />
         </div>
