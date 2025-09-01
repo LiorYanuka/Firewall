@@ -1,64 +1,118 @@
-# build outputs
-Backend/dist
+# ===================================
+# DEPENDENCIES
+# ===================================
+node_modules/
+Backend/node_modules/
+Frontend/my-app/node_modules/
+/.pnp
+.pnp.*
 
-# dependencies
-Backend/node_modules
+# ===================================
+# BUILD OUTPUTS
+# ===================================
+# Backend
+Backend/dist/
+Backend/build/
 
-# environment file
+# Frontend
+Frontend/my-app/.next/
+Frontend/my-app/out/
+Frontend/my-app/build/
+Frontend/my-app/dist/
+
+# ===================================
+# ENVIRONMENT FILES
+# ===================================
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.*.local
+
+# Backend environment files
 Backend/.env
 Backend/.env.local
 Backend/.env.*.local
 
-# logs
-npm-debug.log*
+# Frontend environment files
+Frontend/my-app/.env
+Frontend/my-app/.env.local
+Frontend/my-app/.env.*.local
 
-# tests
-Backend/coverage
-
-# Frontend (when you create it)
-Frontend/node_modules
-Frontend/dist
-Frontend/build
-Frontend/.env
-Frontend/.env.local
-Frontend/.env.*.local
-
-# dependencies
-Frontend/my-app/node_modules
-/.pnp
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/versions
-
-# testing
-/coverage
-
-# next.js
-/.next/
-/out/
-
-# production
-/build
-
-# misc
-.DS_Store
-*.pem
-
-# debug
+# ===================================
+# LOGS
+# ===================================
+logs
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
+# Runtime logs
+app.log
+combined.log
+error.log
 
-# vercel
-.vercel
+# ===================================
+# TESTING
+# ===================================
+coverage/
+Backend/coverage/
+Frontend/my-app/coverage/
+.nyc_output
 
-# typescript
+# ===================================
+# CACHE & TEMPORARY FILES
+# ===================================
+.cache/
+.parcel-cache/
+.temp/
+.tmp/
+
+# ===================================
+# DATABASE
+# ===================================
+*.db
+*.sqlite
+*.sqlite3
+
+# ===================================
+# IDE & EDITOR FILES
+# ===================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ===================================
+# OS GENERATED FILES
+# ===================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*.pem
+
+# ===================================
+# TYPESCRIPT
+# ===================================
 *.tsbuildinfo
 next-env.d.ts
+
+# ===================================
+# DEPLOYMENT
+# ===================================
+.vercel
+.netlify
+
+# ===================================
+# MISC
+# ===================================
+*.tgz
+*.tar.gz

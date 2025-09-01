@@ -36,34 +36,46 @@ type LayoutConfig<Route extends LayoutRoutes = LayoutRoutes> = {
 }
 
 
-// Validate ../../src/app/API Interface/page.tsx
-{
-  const handler = {} as typeof import("../../src/app/API Interface/page.js")
-  handler satisfies AppPageConfig<"/API Interface">
-}
-
-// Validate ../../src/app/Firewall Rules/page.tsx
-{
-  const handler = {} as typeof import("../../src/app/Firewall Rules/page.js")
-  handler satisfies AppPageConfig<"/Firewall Rules">
-}
-
-// Validate ../../src/app/Kernel Modules/page.tsx
-{
-  const handler = {} as typeof import("../../src/app/Kernel Modules/page.js")
-  handler satisfies AppPageConfig<"/Kernel Modules">
-}
-
-// Validate ../../src/app/Logs & Testing/page.tsx
-{
-  const handler = {} as typeof import("../../src/app/Logs & Testing/page.js")
-  handler satisfies AppPageConfig<"/Logs & Testing">
-}
-
 // Validate ../../src/app/Overview/page.tsx
 {
   const handler = {} as typeof import("../../src/app/Overview/page.js")
   handler satisfies AppPageConfig<"/Overview">
+}
+
+// Validate ../../src/app/Profile/page.tsx
+{
+  const handler = {} as typeof import("../../src/app/Profile/page.js")
+  handler satisfies AppPageConfig<"/Profile">
+}
+
+// Validate ../../src/app/Settings/page.tsx
+{
+  const handler = {} as typeof import("../../src/app/Settings/page.js")
+  handler satisfies AppPageConfig<"/Settings">
+}
+
+// Validate ../../src/app/api-interface/page.tsx
+{
+  const handler = {} as typeof import("../../src/app/api-interface/page.js")
+  handler satisfies AppPageConfig<"/api-interface">
+}
+
+// Validate ../../src/app/firewall-rules/page.tsx
+{
+  const handler = {} as typeof import("../../src/app/firewall-rules/page.js")
+  handler satisfies AppPageConfig<"/firewall-rules">
+}
+
+// Validate ../../src/app/kernel-modules/page.tsx
+{
+  const handler = {} as typeof import("../../src/app/kernel-modules/page.js")
+  handler satisfies AppPageConfig<"/kernel-modules">
+}
+
+// Validate ../../src/app/logs-testing/page.tsx
+{
+  const handler = {} as typeof import("../../src/app/logs-testing/page.js")
+  handler satisfies AppPageConfig<"/logs-testing">
 }
 
 // Validate ../../src/app/page.tsx

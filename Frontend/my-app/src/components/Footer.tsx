@@ -17,9 +17,9 @@ export default function Footer() {
             <h4 className="text-md font-semibold mb-4">Quick Links</h4>
             <ul className="space-y-2 text-sm">
               <li><a href="/Overview" className="text-gray-300 hover:text-white transition-colors">Overview</a></li>
-              <li><a href="/Firewall%20Rules" className="text-gray-300 hover:text-white transition-colors">Rules</a></li>
-              <li><a href="/API%20Interface" className="text-gray-300 hover:text-white transition-colors">API</a></li>
-              <li><a href="/Logs%20%26%20Testing" className="text-gray-300 hover:text-white transition-colors">Logs</a></li>
+              <li><a href="/firewall-rules" className="text-gray-300 hover:text-white transition-colors">Rules</a></li>
+              <li><a href="/api-interface" className="text-gray-300 hover:text-white transition-colors">API</a></li>
+              <li><a href="/logs-testing" className="text-gray-300 hover:text-white transition-colors">Logs</a></li>
             </ul>
           </div>
 

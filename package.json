@@ -1,0 +1,49 @@
+{
+  "name": "firewall-management-system",
+  "version": "1.0.0",
+  "description": "A comprehensive firewall management application with Node.js backend and Next.js frontend",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "cd Backend && npm run dev",
+    "dev:frontend": "cd Frontend/my-app && npm run dev",
+    "build": "npm run build:backend && npm run build:frontend",
+    "build:backend": "cd Backend && npm run build",
+    "build:frontend": "cd Frontend/my-app && npm run build",
+    "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
+    "start:backend": "cd Backend && npm run start",
+    "start:frontend": "cd Frontend/my-app && npm run start",
+    "test": "npm run test:backend",
+    "test:backend": "cd Backend && npm test",
+    "install:all": "npm install && cd Backend && npm install && cd ../Frontend/my-app && npm install",
+    "clean": "npm run clean:backend && npm run clean:frontend",
+    "clean:backend": "cd Backend && rm -rf node_modules dist coverage",
+    "clean:frontend": "cd Frontend/my-app && rm -rf node_modules .next out build"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "workspaces": [
+    "Backend",
+    "Frontend/my-app"
+  ],
+  "keywords": [
+    "firewall",
+    "security",
+    "nodejs",
+    "nextjs",
+    "typescript",
+    "postgresql",
+    "drizzle"
+  ],
+  "author": "Lior Yanuka",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/username/firewall-management-system.git"
+  },
+  "bugs": {
+    "url": "https://github.com/username/firewall-management-system/issues"
+  },
+  "homepage": "https://github.com/username/firewall-management-system#readme"
+}
