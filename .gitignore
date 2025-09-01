@@ -10,6 +10,11 @@ Frontend/my-app/node_modules/
 # ===================================
 # BUILD OUTPUTS
 # ===================================
+# Root (any build artifacts placed at repo root)
+dist/
+.next/
+out/
+
 # Backend
 Backend/dist/
 Backend/build/
@@ -19,6 +24,8 @@ Frontend/my-app/.next/
 Frontend/my-app/out/
 Frontend/my-app/build/
 Frontend/my-app/dist/
+Frontend/my-app/.turbo/
+Frontend/my-app/.swc/
 
 # ===================================
 # ENVIRONMENT FILES
@@ -49,6 +56,8 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
+.eslintcache
+Frontend/my-app/.eslintcache
 
 # Runtime logs
 app.log
@@ -104,6 +113,7 @@ Thumbs.db
 # ===================================
 *.tsbuildinfo
 next-env.d.ts
+.swc/
 
 # ===================================
 # DEPLOYMENT
