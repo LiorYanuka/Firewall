@@ -14,6 +14,7 @@ Frontend/my-app/node_modules/
 dist/
 .next/
 out/
+.turbo/
 
 # Backend
 Backend/dist/
@@ -26,6 +27,13 @@ Frontend/my-app/build/
 Frontend/my-app/dist/
 Frontend/my-app/.turbo/
 Frontend/my-app/.swc/
+
+# Glob coverage for Next/Turbopack across any future packages
+**/.next/
+**/out/
+**/.turbo/
+**/.swc/
+**/.vercel/
 
 # ===================================
 # ENVIRONMENT FILES
